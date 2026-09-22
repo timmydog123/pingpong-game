@@ -13,9 +13,7 @@
         }
 
         body {
-            /* Your photo as the full page background */
-            background: #1e272e url('https://i.ibb.co/L519p44/Screenshot-2026-09-22-at-12-12-38-PM.png') no-repeat center center fixed;
-            background-size: cover;
+            background: #222f3e;
             color: #2c3e50;
             font-family: 'Sniglet', 'Fredoka One', cursive, sans-serif;
             display: flex;
@@ -28,15 +26,13 @@
             overflow: hidden;
         }
 
-        /* Container framed nicely over the photo */
         .game-wrapper {
             position: relative;
             z-index: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: rgba(255, 255, 255, 0.82);
-            backdrop-filter: blur(2px);
+            background: rgba(255, 255, 255, 0.95);
             padding: 15px 20px;
             border-radius: 25px;
             border: 5px solid #FF9F43;
@@ -47,14 +43,14 @@
 
         h1 {
             margin: 0 0 10px 0;
-            font-size: 28px;
+            font-size: 26px;
             color: #FF5252;
             text-shadow: 2px 2px 0px #FFF, 3px 3px 0px #333;
             letter-spacing: 1.5px;
             text-align: center;
         }
 
-        /* Settings Control Bar */
+        /* Controls Bar */
         .controls {
             display: flex;
             flex-wrap: wrap;
@@ -97,7 +93,7 @@
             font-weight: bold;
             cursor: pointer;
             border: none;
-            padding: 6px 14px;
+            padding: 6px 16px;
             border-radius: 12px;
             box-shadow: 0 3px 0 #10755a;
             transition: transform 0.1s, background 0.2s;
@@ -106,7 +102,7 @@
         .btn:hover { background: #1dd1a1; }
         .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #10755a; }
 
-        /* Arena Container positioned so Golden Retriever is LEFT and German Shepherd is RIGHT */
+        /* Cartoon Arena Background Container */
         .arena-container {
             position: relative;
             width: 760px;
@@ -118,33 +114,43 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            background: #1e272e;
         }
 
-        /* Left Side: Golden Retriever Background Focus */
-        .dog-side.dog-left {
+        .dog-cartoon-side {
             position: absolute;
-            top: 0; bottom: 0; left: 0; width: 50%;
-            background: url('https://i.ibb.co/L519p44/Screenshot-2026-09-22-at-12-12-38-PM.png') no-repeat;
-            background-size: 210% auto;
-            background-position: 5% 25%;
-            border-right: 2px solid rgba(255, 255, 255, 0.5);
+            top: 0; bottom: 0;
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* Right Side: German Shepherd Background Focus */
-        .dog-side.dog-right {
-            position: absolute;
-            top: 0; bottom: 0; right: 0; width: 50%;
-            background: url('https://i.ibb.co/L519p44/Screenshot-2026-09-22-at-12-12-38-PM.png') no-repeat;
-            background-size: 210% auto;
-            background-position: 95% 25%;
-            border-left: 2px solid rgba(255, 255, 255, 0.5);
+        /* Left side: Golden Retriever Cartoon Background */
+        .cartoon-left {
+            left: 0;
+            background: linear-gradient(135deg, #f39c12, #f1c40f);
+            border-right: 2px solid rgba(255, 255, 255, 0.4);
         }
 
-        /* Compact Table Canvas overlaying in center */
+        /* Right side: German Shepherd Cartoon Background */
+        .cartoon-right {
+            right: 0;
+            background: linear-gradient(135deg, #2c3e50, #d35400);
+            border-left: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .dog-svg {
+            width: 190px;
+            height: 190px;
+            filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.3));
+        }
+
+        /* Pong Canvas overlaying in center */
         canvas {
             position: absolute;
             z-index: 2;
-            background: rgba(46, 134, 222, 0.55); /* Semi-transparent blue court */
+            background: rgba(46, 134, 222, 0.65);
             border-radius: 10px;
             cursor: none;
         }
@@ -239,12 +245,56 @@
             <button class="btn" id="restartBtn">🎾 Play Again!</button>
         </div>
 
-        <!-- Arena containing Left/Right dogs and compact central game canvas -->
         <div class="arena-container">
-            <!-- Left Side: Golden Retriever -->
-            <div class="dog-side dog-left"></div>
-            <!-- Right Side: German Shepherd -->
-            <div class="dog-side dog-right"></div>
+            <!-- Left Side: Golden Retriever Cartoon -->
+            <div class="dog-cartoon-side cartoon-left">
+                <svg class="dog-svg" viewBox="0 0 200 200">
+                    <!-- Ears -->
+                    <ellipse cx="45" cy="100" rx="25" ry="50" fill="#e67e22" transform="rotate(15 45 100)"/>
+                    <ellipse cx="155" cy="100" rx="25" ry="50" fill="#e67e22" transform="rotate(-15 155 100)"/>
+                    <!-- Head -->
+                    <circle cx="100" cy="95" r="55" fill="#f39c12"/>
+                    <!-- Muzzle -->
+                    <ellipse cx="100" cy="115" rx="30" ry="22" fill="#f1c40f"/>
+                    <!-- Eyes -->
+                    <circle cx="80" cy="85" r="7" fill="#2c3e50"/>
+                    <circle cx="120" cy="85" r="7" fill="#2c3e50"/>
+                    <circle cx="78" cy="83" r="2.5" fill="#FFFFFF"/>
+                    <circle cx="118" cy="83" r="2.5" fill="#FFFFFF"/>
+                    <!-- Nose -->
+                    <ellipse cx="100" cy="105" rx="10" ry="7" fill="#2c3e50"/>
+                    <!-- Tongue -->
+                    <path d="M 93 122 Q 100 142 107 122" fill="#ff6b6b" stroke="#e74c3c" stroke-width="2"/>
+                    <!-- Smile -->
+                    <path d="M 85 118 Q 100 128 115 118" fill="none" stroke="#2c3e50" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <!-- Right Side: German Shepherd Cartoon -->
+            <div class="dog-cartoon-side cartoon-right">
+                <svg class="dog-svg" viewBox="0 0 200 200">
+                    <!-- Pointy Ears -->
+                    <polygon points="35,110 50,25 90,80" fill="#2c3e50"/>
+                    <polygon points="45,100 55,35 82,75" fill="#d35400"/>
+                    <polygon points="165,110 150,25 110,80" fill="#2c3e50"/>
+                    <polygon points="155,100 145,35 118,75" fill="#d35400"/>
+                    <!-- Head -->
+                    <circle cx="100" cy="100" r="52" fill="#d35400"/>
+                    <!-- Black Mask -->
+                    <path d="M 70 80 Q 100 65 130 80 Q 125 125 100 130 Q 75 125 70 80 Z" fill="#2c3e50"/>
+                    <!-- Muzzle -->
+                    <ellipse cx="100" cy="115" rx="22" ry="16" fill="#1e272e"/>
+                    <!-- Eyes -->
+                    <circle cx="80" cy="88" r="6" fill="#f39c12"/>
+                    <circle cx="120" cy="88" r="6" fill="#f39c12"/>
+                    <circle cx="80" cy="88" r="4" fill="#000000"/>
+                    <circle cx="120" cy="88" r="4" fill="#000000"/>
+                    <circle cx="78" cy="86" r="1.5" fill="#FFFFFF"/>
+                    <circle cx="118" cy="86" r="1.5" fill="#FFFFFF"/>
+                    <!-- Nose -->
+                    <ellipse cx="100" cy="110" rx="8" ry="6" fill="#000000"/>
+                </svg>
+            </div>
 
             <!-- Smaller Table Canvas (520x300) -->
             <canvas id="pongCanvas" width="520" height="300"></canvas>
@@ -328,7 +378,7 @@
             }
         }
 
-        // Game Constants adjusted for smaller canvas
+        // Pong Settings
         const PADDLE_WIDTH = 12;
         const PADDLE_HEIGHT = 65;
         const BALL_SIZE = 10;
@@ -346,7 +396,6 @@
             hard:   { speed: 0.15, baseBallSpeed: 7.5 }
         };
 
-        // Golden Retriever Paddle (Left)
         const player = {
             x: 12,
             y: canvas.height / 2 - PADDLE_HEIGHT / 2,
@@ -356,7 +405,6 @@
             color: '#FF9F43'
         };
 
-        // German Shepherd Paddle (Right)
         const computer = {
             x: canvas.width - 12 - PADDLE_WIDTH,
             y: canvas.height / 2 - PADDLE_HEIGHT / 2,
@@ -366,7 +414,6 @@
             color: '#10AC84'
         };
 
-        // Tennis Ball
         const ball = {
             x: canvas.width / 2,
             y: canvas.height / 2,
@@ -416,12 +463,10 @@
         }
 
         function drawTableDetails() {
-            // White Outer Court Border
             ctx.strokeStyle = '#FFFFFF';
             ctx.lineWidth = 4;
             ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-            // Center Net
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
             ctx.lineWidth = 3;
             ctx.setLineDash([8, 8]);
@@ -463,35 +508,24 @@
         function update() {
             if (isGameOver) return;
 
-            // Player Movement
-            if (upPressed && player.y > 0) {
-                player.y -= PLAYER_SPEED;
-            }
-            if (downPressed && player.y < canvas.height - player.height) {
-                player.y += PLAYER_SPEED;
-            }
+            if (upPressed && player.y > 0) player.y -= PLAYER_SPEED;
+            if (downPressed && player.y < canvas.height - player.height) player.y += PLAYER_SPEED;
 
-            // AI Movement
             const diffConfig = AI_SETTINGS[difficultySelect.value];
             let targetY = ball.y - (computer.height / 2);
             computer.y += (targetY - computer.y) * diffConfig.speed;
 
             if (computer.y < 0) computer.y = 0;
-            if (computer.y > canvas.height - computer.height) {
-                computer.y = canvas.height - computer.height;
-            }
+            if (computer.y > canvas.height - computer.height) computer.y = canvas.height - computer.height;
 
-            // Ball Movement
             ball.x += ball.velocityX;
             ball.y += ball.velocityY;
 
-            // Wall bounce
             if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
                 ball.velocityY = -ball.velocityY;
                 playSound('hit');
             }
 
-            // Collision Check
             let activePlayer = (ball.x < canvas.width / 2) ? player : computer;
 
             if (collision(ball, activePlayer)) {
@@ -504,11 +538,9 @@
                 ball.speed += 0.25;
                 ball.velocityX = direction * ball.speed * Math.cos(angleRad);
                 ball.velocityY = ball.speed * Math.sin(angleRad);
-                
                 playSound('hit');
             }
 
-            // Scoring
             if (ball.x - ball.radius < 0) {
                 computer.score++;
                 playSound('score');
@@ -539,18 +571,11 @@
 
         function render() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw Court lines
             drawTableDetails();
-
-            // Draw Paddles
             drawRoundedRect(player.x, player.y, player.width, player.height, 6, player.color);
             drawRoundedRect(computer.x, computer.y, computer.width, computer.height, 6, computer.color);
-
-            // Draw Ball
             drawTennisBall(ball.x, ball.y, ball.radius);
 
-            // End Game Message Banner
             if (isGameOver) {
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
