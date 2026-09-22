@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puppy Pong - Kids Table Tennis</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Sniglet:wght@800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            /* Cute illustration of dogs playing table tennis in a park */
+            background: #a3e062 url('https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: #2c3e50;
+            font-family: 'Sniglet', 'Fredoka One', cursive, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+        }
+
+        /* Overlay blur to make game canvas pop */
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(3px);
+            z-index: 0;
+        }
+
+        .game-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 20px;
+            border-radius: 30px;
+            border: 6px solid #FF9F43;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            max-width: 860px;
+        }
+
+        h1 {
+            margin: 0 0 15px 0;
+            font-size: 38px;
+            color: #FF5252;
+            text-shadow: 3px 3px 0px #FFF, 5px 5px 0px #333;
+            letter-spacing: 2px;
+        }
+
+        /* Controls Panel */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+            background: #FECA57;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 4px solid #FF9F43;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 0 #E58E26;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            color: #222;
+        }
+
+        .controls select, .controls input {
+            background: #FFF;
+            color: #333;
+            border: 3px solid #FF9F43;
+            padding: 6px 12px;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .controls button {
+            background: #10AC84;
+            color: #FFF;
+            font-family: inherit;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 15px;
+            box-shadow: 0 4px 0 #10755a;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .controls button:hover {
+            background: #1dd1a1;
+        }
+
+        .controls button:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #10755a;
+        }
+
+        /* Game Canvas */
+        canvas {
+            background: #2e86de; /* Tennis Table Blue */
+            border: 8px solid #FFFFFF;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            cursor: none;
+        }
+
+        .instructions {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #576574;
+            background: #FFF;
+            padding: 5px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        /* Kid-Friendly Scoreboard */
+        .scoreboard {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            background: #54a0ff;
+            border: 4px solid #2e86de;
+            border-radius: 20px;
+            padding: 10px 25px;
+            box-shadow: 0 6px 0 #2e86de;
+        }
+
+        .player-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #FFF;
+            padding: 6px 16px;
+            border-radius: 15px;
+            border: 3px solid #EE5253;
+        }
+
+        .player-card.computer {
+            border-color: #10AC84;
+        }
+
+        .avatar {
+            font-size: 32px;
+        }
+
+        .score-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: #8395a7;
+            margin-bottom: -4px;
+        }
+
+        .score-val {
+            font-size: 28px;
+            color: #222;
+            font-weight: bold;
+        }
+
+        .target-badge {
+            background: #FF9F43;
+            color: #FFF;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 3px 0 #E58E26;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-overlay"></div>
+
+    <div class="game-wrapper">
+        <h1>🐶 PUPPY PONG 🦴</h1>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="difficulty">🎮 Level:</label>
+                <select id="difficulty">
+                    <option value="easy">🐶 Puppy (Easy)</option>
+                    <option value="medium" selected>🐕 Doggy (Medium)</option>
+                    <option value="hard">🐺 Alpha (Hard)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="targetScore">🦴 Points to Win:</label>
+                <input type="number" id="targetScore" value="5" min="1" max="99" style="width: 60px;">
+            </div>
+
+            <button id="restartBtn">🎾 Play Again!</button>
+        </div>
+
+        <canvas id="pongCanvas" width="800" height="460"></canvas>
+        
+        <div class="instructions">🐾 Move Paddle: Use ↑ and ↓ Arrow Keys on Keyboard</div>
+
+        <!-- Bottom Scoreboard -->
+        <div class="scoreboard">
+            <div class="player-card">
+                <span class="avatar">🐶</span>
+                <div class="score-info">
+                    <span class="score-label">YOU</span>
+                    <span class="score-val" id="playerScoreDisplay">0</span>
+                </div>
+            </div>
+
+            <div class="target-badge">
+                FIRST TO <span id="targetDisplay">5</span> 🏆
+            </div>
+
+            <div class="player-card computer">
+                <div class="score-info">
+                    <span class="score-label">ROBO-PUP</span>
+                    <span class="score-val" id="computerScoreDisplay">0</span>
+                </div>
+                <span class="avatar">🤖</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('pongCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // UI Controls & Score Elements
+        const difficultySelect = document.getElementById('difficulty');
+        const targetScoreInput = document.getElementById('targetScore');
+        const restartBtn = document.getElementById('restartBtn');
+        const playerScoreDisplay = document.getElementById('playerScoreDisplay');
+        const computerScoreDisplay = document.getElementById('computerScoreDisplay');
+        const targetDisplay = document.getElementById('targetDisplay');
+
+        // Sound Effects Generator using Web Audio API (No external assets required!)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'hit') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            } else if (type === 'score') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.25);
+            } else if (type === 'win') {
+                const notes = [400, 500, 600, 800];
+                notes.forEach((freq, idx) => {
+                    const noteOsc = audioCtx.createOscillator();
+                    const noteGain = audioCtx.createGain();
+                    noteOsc.connect(noteGain);
+                    noteGain.connect(audioCtx.destination);
+                    noteOsc.frequency.value = freq;
+                    noteGain.gain.setValueAtTime(0.3, audioCtx.currentTime + idx * 0.1);
+                    noteGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + idx * 0.1 + 0.15);
+                    noteOsc.start(audioCtx.currentTime + idx * 0.1);
+                    noteOsc.stop(audioCtx.currentTime + idx * 0.1 + 0.15);
+                });
+            }
+        }
+
+        // Game Constants & Variables
+        const PADDLE_WIDTH = 16;
+        const PADDLE_HEIGHT = 90;
+        const BALL_SIZE = 14;
+        const PLAYER_SPEED = 9;
+
+        let winningScore = 5;
+        let isGameOver = false;
+
+        let upPressed = false;
+        let downPressed = false;
+
+        // Difficulty Settings
+        const AI_SETTINGS = {
+            easy:   { speed: 0.045, baseBallSpeed: 5.5 },
+            medium: { speed: 0.085, baseBallSpeed: 7.5 },
+            hard:   { speed: 0.14,  baseBallSpeed: 9.5 }
+        };
+
+        // Player Paddle (Left - Red/Orange Dog Paddle)
+        const player = {
+            x: 20,
+            y: canvas.height / 2 - PADDLE_HEIGHT / 2,
+            width: PADDLE_WIDTH,
+            height: PADDLE_HEIGHT,
+            score: 0,
+            color: '#EE5253'
+        };
+
+        // Computer Paddle (Right - Green Dog Paddle)
+        const computer = {
+            x: canvas.width - 20 - PADDLE_WIDTH,
+            y: canvas.height / 2 - PADDLE_HEIGHT / 2,
+            width: PADDLE_WIDTH,
+            height: PADDLE_HEIGHT,
+            score: 0,
+            color: '#10AC84'
+        };
+
+        // Ball Definition (Yellow Tennis Ball)
+        const ball = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: BALL_SIZE,
+            speed: 7,
+            velocityX: 5,
+            velocityY: 5,
+            color: '#FFD700'
+        };
+
+        // Key Listeners
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') upPressed = true;
+            if (e.key === 'ArrowDown') downPressed = true;
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowUp') upPressed = false;
+            if (e.key === 'ArrowDown') downPressed = false;
+        });
+
+        restartBtn.addEventListener('click', resetGame);
+
+        // Drawing Utilities
+        function drawRoundedRect(x, y, w, h, radius, color) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.roundRect(x, y, w, h, radius);
+            ctx.fill();
+        }
+
+        function drawTennisBall(x, y, r) {
+            // Ball Body
+            ctx.fillStyle = '#feca57';
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Tennis Ball Curved Lines
+            ctx.strokeStyle = '#FFF';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.arc(x - r/2, y, r/1.5, -Math.PI/2, Math.PI/2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(x + r/2, y, r/1.5, Math.PI/2, -Math.PI/2);
+            ctx.stroke();
+        }
+
+        function drawTableDetails() {
+            // Table Outer Border Line
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+            // Center Net (Dashed white line)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = 4;
+            ctx.setLineDash([12, 12]);
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function drawText(text, x, y, size = '36px', color = '#FFF') {
+            ctx.fillStyle = color;
+            ctx.font = `${size} 'Sniglet', 'Fredoka One', cursive`;
+            ctx.textAlign = 'center';
+            ctx.fillText(text, x, y);
+        }
+
+        function resetBall() {
+            const currentDiff = difficultySelect.value;
+            const baseSpeed = AI_SETTINGS[currentDiff].baseBallSpeed;
+
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.speed = baseSpeed;
+            
+            ball.velocityX = (ball.velocityX > 0 ? -1 : 1) * (baseSpeed * 0.8);
+            ball.velocityY = (Math.random() - 0.5) * baseSpeed;
+        }
+
+        function collision(b, p) {
+            return (
+                b.x + b.radius > p.x &&
+                b.x - b.radius < p.x + p.width &&
+                b.y + b.radius > p.y &&
+                b.y - b.radius < p.y + p.height
+            );
+        }
+
+        // Game Update Function
+        function update() {
+            if (isGameOver) return;
+
+            // Player Movement
+            if (upPressed && player.y > 0) {
+                player.y -= PLAYER_SPEED;
+            }
+            if (downPressed && player.y < canvas.height - player.height) {
+                player.y += PLAYER_SPEED;
+            }
+
+            // AI Movement
+            const diffConfig = AI_SETTINGS[difficultySelect.value];
+            let targetY = ball.y - (computer.height / 2);
+            computer.y += (targetY - computer.y) * diffConfig.speed;
+
+            if (computer.y < 0) computer.y = 0;
+            if (computer.y > canvas.height - computer.height) {
+                computer.y = canvas.height - computer.height;
+            }
+
+            // Ball Movement
+            ball.x += ball.velocityX;
+            ball.y += ball.velocityY;
+
+            // Top & Bottom Wall bounce
+            if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
+                ball.velocityY = -ball.velocityY;
+                playSound('hit');
+            }
+
+            // Paddle Hit Collision Check
+            let activePlayer = (ball.x < canvas.width / 2) ? player : computer;
+
+            if (collision(ball, activePlayer)) {
+                let collidePoint = (ball.y - (activePlayer.y + activePlayer.height / 2));
+                collidePoint = collidePoint / (activePlayer.height / 2);
+
+                let angleRad = (Math.PI / 4) * collidePoint;
+                let direction = (ball.x < canvas.width / 2) ? 1 : -1;
+
+                ball.speed += 0.3;
+                ball.velocityX = direction * ball.speed * Math.cos(angleRad);
+                ball.velocityY = ball.speed * Math.sin(angleRad);
+                
+                playSound('hit');
+            }
+
+            // Scoring
+            if (ball.x - ball.radius < 0) {
+                computer.score++;
+                playSound('score');
+                updateScoreboard();
+                checkGameOver();
+                if (!isGameOver) resetBall();
+            } else if (ball.x + ball.radius > canvas.width) {
+                player.score++;
+                playSound('score');
+                updateScoreboard();
+                checkGameOver();
+                if (!isGameOver) resetBall();
+            }
+        }
+
+        function updateScoreboard() {
+            playerScoreDisplay.textContent = player.score;
+            computerScoreDisplay.textContent = computer.score;
+        }
+
+        function checkGameOver() {
+            winningScore = parseInt(targetScoreInput.value) || 5;
+            if (player.score >= winningScore || computer.score >= winningScore) {
+                isGameOver = true;
+                playSound('win');
+            }
+        }
+
+        // Render Loop
+        function render() {
+            // Draw Blue Table Background
+            ctx.fillStyle = '#2e86de';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Net and lines
+            drawTableDetails();
+
+            // Draw Paddles
+            drawRoundedRect(player.x, player.y, player.width, player.height, 8, player.color);
+            drawRoundedRect(computer.x, computer.y, computer.width, computer.height, 8, computer.color);
+
+            // Draw Tennis Ball
+            drawTennisBall(ball.x, ball.y, ball.radius);
+
+            // End Game Message Banner
+            if (isGameOver) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                if (player.score >= winningScore) {
+                    drawText("🎉 YOU WIN! GREAT JOB! 🐶", canvas.width / 2, canvas.height / 2 - 10, '38px', '#FFD700');
+                } else {
+                    drawText("ROBO-PUP WINS! 🤖 Try Again!", canvas.width / 2, canvas.height / 2 - 10, '34px', '#FF6B6B');
+                }
+                drawText("Click 'Play Again!' to restart 🎾", canvas.width / 2, canvas.height / 2 + 35, '20px', '#FFF');
+            }
+        }
+
+        function resetGame() {
+            winningScore = parseInt(targetScoreInput.value) || 5;
+            if (winningScore < 1) winningScore = 1;
+            targetScoreInput.value = winningScore;
+            targetDisplay.textContent = winningScore;
+
+            player.score = 0;
+            computer.score = 0;
+            player.y = canvas.height / 2 - PADDLE_HEIGHT / 2;
+            computer.y = canvas.height / 2 - PADDLE_HEIGHT / 2;
+
+            updateScoreboard();
+            isGameOver = false;
+            resetBall();
+        }
+
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Run Game
+        resetGame();
+        gameLoop();
+    </script>
+</body>
+</html>
