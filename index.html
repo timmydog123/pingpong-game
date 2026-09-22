@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Puppy Pong - Kids Table Tennis</title>
+    <title>Golden Retriever vs German Shepherd Pong</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Sniglet:wght@800&display=swap');
 
@@ -13,9 +13,7 @@
         }
 
         body {
-            /* Cute illustration of dogs playing table tennis in a park */
-            background: #a3e062 url('https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
-            background-size: cover;
+            background: #1e272e;
             color: #2c3e50;
             font-family: 'Sniglet', 'Fredoka One', cursive, sans-serif;
             display: flex;
@@ -25,47 +23,42 @@
             min-height: 100vh;
             margin: 0;
             padding: 10px;
+            overflow: hidden;
         }
 
-        /* Overlay blur to make game canvas pop */
-        .bg-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(3px);
-            z-index: 0;
-        }
-
+        /* Container that holds the background dogs and the game canvas */
         .game-wrapper {
             position: relative;
             z-index: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 30px;
             border: 6px solid #FF9F43;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            max-width: 860px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            max-width: 900px;
+            width: 100%;
         }
 
         h1 {
-            margin: 0 0 15px 0;
-            font-size: 38px;
+            margin: 0 0 10px 0;
+            font-size: 34px;
             color: #FF5252;
-            text-shadow: 3px 3px 0px #FFF, 5px 5px 0px #333;
+            text-shadow: 2px 2px 0px #FFF, 4px 4px 0px #333;
             letter-spacing: 2px;
+            text-align: center;
         }
 
-        /* Controls Panel */
+        /* Settings Bar */
         .controls {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
             margin-bottom: 15px;
             background: #FECA57;
-            padding: 10px 20px;
+            padding: 10px 18px;
             border-radius: 20px;
             border: 4px solid #FF9F43;
             align-items: center;
@@ -76,8 +69,8 @@
         .control-group {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 18px;
+            gap: 6px;
+            font-size: 16px;
             color: #222;
         }
 
@@ -85,60 +78,97 @@
             background: #FFF;
             color: #333;
             border: 3px solid #FF9F43;
-            padding: 6px 12px;
+            padding: 4px 8px;
             font-family: inherit;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
-            border-radius: 12px;
+            border-radius: 10px;
             outline: none;
-            cursor: pointer;
         }
 
-        .controls button {
+        .btn {
             background: #10AC84;
             color: #FFF;
             font-family: inherit;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             border: none;
-            padding: 8px 18px;
-            border-radius: 15px;
+            padding: 6px 14px;
+            border-radius: 12px;
             box-shadow: 0 4px 0 #10755a;
             transition: transform 0.1s, background 0.2s;
         }
 
-        .controls button:hover {
-            background: #1dd1a1;
-        }
+        .btn:hover { background: #1dd1a1; }
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #10755a; }
 
-        .controls button:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px 0 #10755a;
+        .btn-upload {
+            background: #54a0ff;
+            box-shadow: 0 4px 0 #2e86de;
         }
+        .btn-upload:hover { background: #74b9ff; }
 
-        /* Game Canvas */
-        canvas {
-            background: #2e86de; /* Tennis Table Blue */
-            border: 8px solid #FFFFFF;
+        /* Dog Background Panels Container */
+        .arena-container {
+            position: relative;
+            width: 800px;
+            height: 460px;
             border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border: 8px solid #FFFFFF;
+            display: flex;
+        }
+
+        /* Dog Photo Backgrounds */
+        .dog-side {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            background-size: cover;
+            background-repeat: no-repeat;
+            transition: filter 0.3s;
+        }
+
+        /* Left Side: Focuses on the Golden Retriever */
+        .dog-left {
+            left: 0;
+            background-position: 15% 30%;
+            border-right: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        /* Right Side: Focuses on the German Shepherd */
+        .dog-right {
+            right: 0;
+            background-position: 85% 30%;
+            border-left: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        /* Game Canvas overlaid on top of the Dog Backgrounds */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            background: transparent;
             cursor: none;
         }
 
         .instructions {
             margin-top: 10px;
-            font-size: 16px;
+            font-size: 15px;
             color: #576574;
             background: #FFF;
-            padding: 5px 15px;
+            padding: 4px 14px;
             border-radius: 10px;
             font-weight: bold;
         }
 
-        /* Kid-Friendly Scoreboard */
+        /* Scoreboard */
         .scoreboard {
-            margin-top: 15px;
+            margin-top: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -146,26 +176,22 @@
             background: #54a0ff;
             border: 4px solid #2e86de;
             border-radius: 20px;
-            padding: 10px 25px;
-            box-shadow: 0 6px 0 #2e86de;
+            padding: 8px 20px;
+            box-shadow: 0 5px 0 #2e86de;
         }
 
         .player-card {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             background: #FFF;
-            padding: 6px 16px;
+            padding: 6px 14px;
             border-radius: 15px;
             border: 3px solid #EE5253;
         }
 
         .player-card.computer {
             border-color: #10AC84;
-        }
-
-        .avatar {
-            font-size: 32px;
         }
 
         .score-info {
@@ -175,13 +201,13 @@
         }
 
         .score-label {
-            font-size: 14px;
+            font-size: 12px;
             color: #8395a7;
-            margin-bottom: -4px;
+            font-weight: bold;
         }
 
         .score-val {
-            font-size: 28px;
+            font-size: 26px;
             color: #222;
             font-weight: bold;
         }
@@ -189,20 +215,35 @@
         .target-badge {
             background: #FF9F43;
             color: #FFF;
-            padding: 6px 14px;
+            padding: 6px 12px;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             box-shadow: 0 3px 0 #E58E26;
+        }
+
+        /* Photo Upload Modal / Notice */
+        #photoNotice {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.85);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            z-index: 10;
+            pointer-events: none;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-overlay"></div>
-
     <div class="game-wrapper">
-        <h1>🐶 PUPPY PONG 🦴</h1>
+        <h1>🏓 GOLDEN RETRIEVER VS GERMAN SHEPHERD 🏓</h1>
 
         <div class="controls">
             <div class="control-group">
@@ -215,23 +256,32 @@
             </div>
 
             <div class="control-group">
-                <label for="targetScore">🦴 Points to Win:</label>
-                <input type="number" id="targetScore" value="5" min="1" max="99" style="width: 60px;">
+                <label for="targetScore">🦴 Win Points:</label>
+                <input type="number" id="targetScore" value="5" min="1" max="99" style="width: 55px;">
             </div>
 
-            <button id="restartBtn">🎾 Play Again!</button>
+            <button class="btn btn-upload" onclick="document.getElementById('imageLoader').click()">📷 Load Dog Photo</button>
+            <input type="file" id="imageLoader" accept="image/*" style="display: none;">
+
+            <button class="btn" id="restartBtn">🎾 Play Again!</button>
         </div>
 
-        <canvas id="pongCanvas" width="800" height="460"></canvas>
+        <!-- Dog Background Arena -->
+        <div class="arena-container" id="arena">
+            <div id="photoNotice">👈 Click "📷 Load Dog Photo" above to select your photo!</div>
+            <div class="dog-side dog-left" id="leftDog"></div>
+            <div class="dog-side dog-right" id="rightDog"></div>
+            <canvas id="pongCanvas" width="800" height="460"></canvas>
+        </div>
         
-        <div class="instructions">🐾 Move Paddle: Use ↑ and ↓ Arrow Keys on Keyboard</div>
+        <div class="instructions">🐾 Controls: Move Left Paddle using ↑ and ↓ Arrow Keys</div>
 
-        <!-- Bottom Scoreboard -->
+        <!-- Scoreboard -->
         <div class="scoreboard">
             <div class="player-card">
-                <span class="avatar">🐶</span>
+                <span style="font-size:28px">🐕</span>
                 <div class="score-info">
-                    <span class="score-label">YOU</span>
+                    <span class="score-label">GOLDEN RETRIEVER</span>
                     <span class="score-val" id="playerScoreDisplay">0</span>
                 </div>
             </div>
@@ -242,10 +292,10 @@
 
             <div class="player-card computer">
                 <div class="score-info">
-                    <span class="score-label">ROBO-PUP</span>
+                    <span class="score-label">GERMAN SHEPHERD</span>
                     <span class="score-val" id="computerScoreDisplay">0</span>
                 </div>
-                <span class="avatar">🤖</span>
+                <span style="font-size:28px">🐺</span>
             </div>
         </div>
     </div>
@@ -254,7 +304,11 @@
         const canvas = document.getElementById('pongCanvas');
         const ctx = canvas.getContext('2d');
 
-        // UI Controls & Score Elements
+        const leftDog = document.getElementById('leftDog');
+        const rightDog = document.getElementById('rightDog');
+        const imageLoader = document.getElementById('imageLoader');
+        const photoNotice = document.getElementById('photoNotice');
+
         const difficultySelect = document.getElementById('difficulty');
         const targetScoreInput = document.getElementById('targetScore');
         const restartBtn = document.getElementById('restartBtn');
@@ -262,13 +316,11 @@
         const computerScoreDisplay = document.getElementById('computerScoreDisplay');
         const targetDisplay = document.getElementById('targetDisplay');
 
-        // Sound Effects Generator using Web Audio API (No external assets required!)
+        // Web Audio API Sound Effects
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
         function playSound(type) {
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.connect(gain);
@@ -276,8 +328,8 @@
 
             if (type === 'hit') {
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.08);
+                osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(850, audioCtx.currentTime + 0.08);
                 gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
                 osc.start();
@@ -291,8 +343,7 @@
                 osc.start();
                 osc.stop(audioCtx.currentTime + 0.25);
             } else if (type === 'win') {
-                const notes = [400, 500, 600, 800];
-                notes.forEach((freq, idx) => {
+                [400, 500, 600, 800].forEach((freq, idx) => {
                     const noteOsc = audioCtx.createOscillator();
                     const noteGain = audioCtx.createGain();
                     noteOsc.connect(noteGain);
@@ -306,9 +357,23 @@
             }
         }
 
+        // Image Handler: Loads user photo and splits focus between Golden Retriever & German Shepherd
+        imageLoader.addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imgData = event.target.result;
+                leftDog.style.backgroundImage = `url(${imgData})`;
+                rightDog.style.backgroundImage = `url(${imgData})`;
+                photoNotice.style.display = 'none';
+            };
+            if (e.target.files[0]) {
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
         // Game Constants & Variables
-        const PADDLE_WIDTH = 16;
-        const PADDLE_HEIGHT = 90;
+        const PADDLE_WIDTH = 18;
+        const PADDLE_HEIGHT = 95;
         const BALL_SIZE = 14;
         const PLAYER_SPEED = 9;
 
@@ -318,26 +383,25 @@
         let upPressed = false;
         let downPressed = false;
 
-        // Difficulty Settings
         const AI_SETTINGS = {
-            easy:   { speed: 0.045, baseBallSpeed: 5.5 },
-            medium: { speed: 0.085, baseBallSpeed: 7.5 },
-            hard:   { speed: 0.14,  baseBallSpeed: 9.5 }
+            easy:   { speed: 0.048, baseBallSpeed: 6 },
+            medium: { speed: 0.088, baseBallSpeed: 8 },
+            hard:   { speed: 0.145, baseBallSpeed: 10 }
         };
 
-        // Player Paddle (Left - Red/Orange Dog Paddle)
+        // Golden Retriever Paddle (Left)
         const player = {
-            x: 20,
+            x: 18,
             y: canvas.height / 2 - PADDLE_HEIGHT / 2,
             width: PADDLE_WIDTH,
             height: PADDLE_HEIGHT,
             score: 0,
-            color: '#EE5253'
+            color: '#FF9F43'
         };
 
-        // Computer Paddle (Right - Green Dog Paddle)
+        // German Shepherd Paddle (Right)
         const computer = {
-            x: canvas.width - 20 - PADDLE_WIDTH,
+            x: canvas.width - 18 - PADDLE_WIDTH,
             y: canvas.height / 2 - PADDLE_HEIGHT / 2,
             width: PADDLE_WIDTH,
             height: PADDLE_HEIGHT,
@@ -345,7 +409,7 @@
             color: '#10AC84'
         };
 
-        // Ball Definition (Yellow Tennis Ball)
+        // Yellow Tennis Ball
         const ball = {
             x: canvas.width / 2,
             y: canvas.height / 2,
@@ -356,7 +420,6 @@
             color: '#FFD700'
         };
 
-        // Key Listeners
         window.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowUp') upPressed = true;
             if (e.key === 'ArrowDown') downPressed = true;
@@ -369,22 +432,22 @@
 
         restartBtn.addEventListener('click', resetGame);
 
-        // Drawing Utilities
         function drawRoundedRect(x, y, w, h, radius, color) {
             ctx.fillStyle = color;
             ctx.beginPath();
             ctx.roundRect(x, y, w, h, radius);
             ctx.fill();
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 3;
+            ctx.stroke();
         }
 
         function drawTennisBall(x, y, r) {
-            // Ball Body
             ctx.fillStyle = '#feca57';
             ctx.beginPath();
             ctx.arc(x, y, r, 0, Math.PI * 2);
             ctx.fill();
 
-            // Tennis Ball Curved Lines
             ctx.strokeStyle = '#FFF';
             ctx.lineWidth = 2.5;
             ctx.beginPath();
@@ -396,13 +459,17 @@
         }
 
         function drawTableDetails() {
-            // Table Outer Border Line
+            // Semi-transparent center field overlay
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Table Border Lines
             ctx.strokeStyle = '#FFFFFF';
             ctx.lineWidth = 6;
             ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-            // Center Net (Dashed white line)
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            // Center Net
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
             ctx.lineWidth = 4;
             ctx.setLineDash([12, 12]);
             ctx.beginPath();
@@ -440,7 +507,6 @@
             );
         }
 
-        // Game Update Function
         function update() {
             if (isGameOver) return;
 
@@ -466,13 +532,13 @@
             ball.x += ball.velocityX;
             ball.y += ball.velocityY;
 
-            // Top & Bottom Wall bounce
+            // Wall bounce
             if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
                 ball.velocityY = -ball.velocityY;
                 playSound('hit');
             }
 
-            // Paddle Hit Collision Check
+            // Collision Check
             let activePlayer = (ball.x < canvas.width / 2) ? player : computer;
 
             if (collision(ball, activePlayer)) {
@@ -518,13 +584,10 @@
             }
         }
 
-        // Render Loop
         function render() {
-            // Draw Blue Table Background
-            ctx.fillStyle = '#2e86de';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw Net and lines
+            // Draw field overlay and lines
             drawTableDetails();
 
             // Draw Paddles
@@ -534,15 +597,15 @@
             // Draw Tennis Ball
             drawTennisBall(ball.x, ball.y, ball.radius);
 
-            // End Game Message Banner
+            // Game Over Screen
             if (isGameOver) {
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                 if (player.score >= winningScore) {
-                    drawText("🎉 YOU WIN! GREAT JOB! 🐶", canvas.width / 2, canvas.height / 2 - 10, '38px', '#FFD700');
+                    drawText("🎉 GOLDEN RETRIEVER WINS! 🐕", canvas.width / 2, canvas.height / 2 - 10, '36px', '#FFD700');
                 } else {
-                    drawText("ROBO-PUP WINS! 🤖 Try Again!", canvas.width / 2, canvas.height / 2 - 10, '34px', '#FF6B6B');
+                    drawText("GERMAN SHEPHERD WINS! 🐺", canvas.width / 2, canvas.height / 2 - 10, '36px', '#10AC84');
                 }
                 drawText("Click 'Play Again!' to restart 🎾", canvas.width / 2, canvas.height / 2 + 35, '20px', '#FFF');
             }
@@ -570,7 +633,6 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // Run Game
         resetGame();
         gameLoop();
     </script>
